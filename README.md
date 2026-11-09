@@ -4,9 +4,9 @@ Executable Python 3.11+ sensor simulation, ADC acquisition, and exact integer
 verification vectors for a separate Verilog lock-in project. Parameters describe
 a chosen teaching model, not a commercial sensor. No RTL or dashboard is included.
 
-For a teaching walkthrough, read [Explain this to your Verilog teammate](docs/START_HERE.md).
-It links to every source file explained line by line, maps the module connectors,
-and shows how to generate signals and hand exact expected sums to a testbench.
+For a detailed walkthrough, read the project documentation in the local `docs/`
+directory. It maps the module connectors and shows how to generate signals and
+provide exact expected sums to an HDL testbench.
 
 ## Install and run
 
@@ -241,7 +241,7 @@ sample/window/trailing counts, clipping, column order, widths, and limitations.
 Changing scenario configuration replaces that scenario's files; use a different
 name or output directory to retain multiple runs.
 
-## Verilog teammate handoff
+## HDL integration
 
 1. Reset independently for each scenario. Load its `adc_samples.hex` and
    `reference_lut.hex` with `$readmemh` into signed 16-bit memories/registers.
@@ -350,7 +350,7 @@ Use the scripts as follows from the `lvdt_project` directory:
 # Generate one scenario and its Python/HDL handoff files
 python scripts/generate_scenarios.py --config configs/baseline.json
 
-# Generate the calibration vectors for a Verilog testbench
+# Generate calibration vectors for an HDL testbench
 python scripts/generate_hdl_vectors.py --config configs/calibration.json
 
 # Generate all ten standard scenarios
@@ -392,7 +392,7 @@ output/ground_truth/<scenario>/ground_truth.csv
 ```
 
 `adc_samples.hex` is the signed 16-bit ADC stream. `reference_lut.hex` is the
-20-entry signed Q1.14 sine table. The Verilog testbench should compare each
+20-entry signed Q1.14 sine table. An HDL testbench should compare each
 completed accumulator against the `expected_accumulator` column in
 `expected_results.csv`. `metadata.json` records the exact settings and scaling
 used to create those files. Re-running with the same configuration and stream
