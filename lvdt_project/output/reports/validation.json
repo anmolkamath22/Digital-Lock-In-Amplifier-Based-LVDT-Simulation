@@ -1,0 +1,277 @@
+{
+  "status": "passed",
+  "seed": 42,
+  "trials_per_noise_level": 1000,
+  "static": [
+    {
+      "true_mm": 0,
+      "float_mm": 0.0,
+      "fixed_mm": 0.0,
+      "absolute_error_mm": 0.0,
+      "accumulator": 0
+    },
+    {
+      "true_mm": 2,
+      "float_mm": 2.0000000000000013,
+      "fixed_mm": 1.999789228041967,
+      "absolute_error_mm": 0.00021077195803309579,
+      "accumulator": 644177200
+    },
+    {
+      "true_mm": -2,
+      "float_mm": -2.0000000000000013,
+      "fixed_mm": -1.999789228041967,
+      "absolute_error_mm": 0.00021077195803309579,
+      "accumulator": -644177200
+    }
+  ],
+  "calibration": {
+    "bias_mm": 0.0,
+    "rmse_mm": 0.0006293280941408453,
+    "mae_mm": 0.00044962583166182924,
+    "max_absolute_error_mm": 0.0010502487421035767,
+    "std_mm": 0.0006293280941408453,
+    "slope_mm_per_mm": 0.9999385114872095,
+    "offset_mm": 1.3543718651395425e-18,
+    "estimated_sensitivity_v_per_mm": 0.23998524275693026,
+    "r_squared": 0.9999999641710475
+  },
+  "noise": [
+    {
+      "bias_mm": -0.00021077195803309579,
+      "rmse_mm": 0.0002107719580330958,
+      "mae_mm": 0.00021077195803309579,
+      "max_absolute_error_mm": 0.00021077195803309579,
+      "std_mm": 0.0,
+      "sigma_v": 0,
+      "trials": 1000,
+      "theoretical_std_mm": 0.0,
+      "mean_estimate_mm": 1.9997892280419665,
+      "mean_95_percent_halfwidth_mm": 2.753870719129763e-17,
+      "clipped_count": 0
+    },
+    {
+      "bias_mm": 0.00014530399503815338,
+      "rmse_mm": 0.021187933248252775,
+      "mae_mm": 0.016800163179015136,
+      "max_absolute_error_mm": 0.06480973710616444,
+      "std_mm": 0.02118743500477208,
+      "sigma_v": 0.05,
+      "trials": 1000,
+      "theoretical_std_mm": 0.020833333333333336,
+      "mean_estimate_mm": 2.0001453039950383,
+      "mean_95_percent_halfwidth_mm": 0.0013138679251586995,
+      "clipped_count": 0
+    },
+    {
+      "bias_mm": -0.001333291207750565,
+      "rmse_mm": 0.04303926168312915,
+      "mae_mm": 0.03431215168411533,
+      "max_absolute_error_mm": 0.15385753040512418,
+      "std_mm": 0.04301860505390899,
+      "sigma_v": 0.1,
+      "trials": 1000,
+      "theoretical_std_mm": 0.04166666666666667,
+      "mean_estimate_mm": 1.9986667087922492,
+      "mean_95_percent_halfwidth_mm": 0.0026676549262650566,
+      "clipped_count": 0
+    },
+    {
+      "bias_mm": 0.00266246456652886,
+      "rmse_mm": 0.08094401602516163,
+      "mae_mm": 0.06416891877601547,
+      "max_absolute_error_mm": 0.2519152984023094,
+      "std_mm": 0.08090021639472665,
+      "sigma_v": 0.2,
+      "trials": 1000,
+      "theoretical_std_mm": 0.08333333333333334,
+      "mean_estimate_mm": 2.0026624645665287,
+      "mean_95_percent_halfwidth_mm": 0.005016756366945264,
+      "clipped_count": 0
+    },
+    {
+      "bias_mm": 5.5509060621341314e-05,
+      "rmse_mm": 0.16392788389121113,
+      "mae_mm": 0.131626398930947,
+      "max_absolute_error_mm": 0.5526305784781771,
+      "std_mm": 0.16392787449300555,
+      "sigma_v": 0.4,
+      "trials": 1000,
+      "theoretical_std_mm": 0.16666666666666669,
+      "mean_estimate_mm": 2.0000555090606214,
+      "mean_95_percent_halfwidth_mm": 0.010165438916380892,
+      "clipped_count": 0
+    }
+  ],
+  "phase": [
+    {
+      "phase_deg": 0,
+      "expected_mm": 2.0,
+      "floating_mm": 2.0000000000000013,
+      "fixed_mm": 1.999789228041967
+    },
+    {
+      "phase_deg": 15,
+      "expected_mm": 1.9318516525781366,
+      "floating_mm": 1.9318516525781386,
+      "fixed_mm": 1.9324751570820808
+    },
+    {
+      "phase_deg": 30,
+      "expected_mm": 1.7320508075688774,
+      "floating_mm": 1.73205080756888,
+      "fixed_mm": 1.7324347669879596
+    },
+    {
+      "phase_deg": 45,
+      "expected_mm": 1.4142135623730951,
+      "floating_mm": 1.4142135623731018,
+      "fixed_mm": 1.413594496746858
+    },
+    {
+      "phase_deg": 90,
+      "expected_mm": 1.2246467991473532e-16,
+      "floating_mm": 4.713821925387644e-15,
+      "fixed_mm": 0.0
+    }
+  ],
+  "interference": [
+    {
+      "frequency_hz": 400,
+      "interference_phase_deg": 30,
+      "mean_bias_mm": 1.1901590823981679e-15,
+      "rms_error_mm": 5.973709712684167e-14,
+      "max_absolute_error_mm": 1.1435297153639112e-13
+    },
+    {
+      "frequency_hz": 950,
+      "interference_phase_deg": 30,
+      "mean_bias_mm": 2.264854970235319e-15,
+      "rms_error_mm": 0.32620826774012485,
+      "max_absolute_error_mm": 0.3262082677404383
+    },
+    {
+      "frequency_hz": 1000,
+      "interference_phase_deg": 30,
+      "mean_bias_mm": 0.8660254037845602,
+      "rms_error_mm": 0.8660254037845603,
+      "max_absolute_error_mm": 0.8660254037848225
+    },
+    {
+      "frequency_hz": 1050,
+      "interference_phase_deg": 30,
+      "mean_bias_mm": -5.306866057708249e-16,
+      "rms_error_mm": 0.3108099033157065,
+      "max_absolute_error_mm": 0.3108099033159384
+    },
+    {
+      "frequency_hz": 1600,
+      "interference_phase_deg": 30,
+      "mean_bias_mm": 1.127986593019159e-15,
+      "rms_error_mm": 6.547759198963411e-14,
+      "max_absolute_error_mm": 1.5076828674409626e-13
+    }
+  ],
+  "dynamic": {
+    "bias_mm": -2.7755575615628914e-19,
+    "rmse_mm": 0.0006731628195533108,
+    "mae_mm": 0.0006053937938537982,
+    "max_absolute_error_mm": 0.0010702597515741263,
+    "std_mm": 0.0006731628195533108
+  },
+  "overrange_clipped_count": 10000,
+  "checks": [
+    {
+      "name": "static 0 mm",
+      "passed": true
+    },
+    {
+      "name": "static 2 mm",
+      "passed": true
+    },
+    {
+      "name": "static -2 mm",
+      "passed": true
+    },
+    {
+      "name": "calibration linearity",
+      "passed": true
+    },
+    {
+      "name": "Monte Carlo sigma=0 bias",
+      "passed": true
+    },
+    {
+      "name": "Monte Carlo sigma=0.05 bias",
+      "passed": true
+    },
+    {
+      "name": "Monte Carlo sigma=0.05 variance",
+      "passed": true
+    },
+    {
+      "name": "Monte Carlo sigma=0.1 bias",
+      "passed": true
+    },
+    {
+      "name": "Monte Carlo sigma=0.1 variance",
+      "passed": true
+    },
+    {
+      "name": "Monte Carlo sigma=0.2 bias",
+      "passed": true
+    },
+    {
+      "name": "Monte Carlo sigma=0.2 variance",
+      "passed": true
+    },
+    {
+      "name": "Monte Carlo sigma=0.4 bias",
+      "passed": true
+    },
+    {
+      "name": "Monte Carlo sigma=0.4 variance",
+      "passed": true
+    },
+    {
+      "name": "phase 0 cosine response",
+      "passed": true
+    },
+    {
+      "name": "phase 15 cosine response",
+      "passed": true
+    },
+    {
+      "name": "phase 30 cosine response",
+      "passed": true
+    },
+    {
+      "name": "phase 45 cosine response",
+      "passed": true
+    },
+    {
+      "name": "phase 90 cosine response",
+      "passed": true
+    },
+    {
+      "name": "same-frequency interference bias",
+      "passed": true
+    },
+    {
+      "name": "dynamic sine-squared window interpretation",
+      "passed": true
+    },
+    {
+      "name": "complete-cycle DC rejection",
+      "passed": true
+    },
+    {
+      "name": "overrange reported",
+      "passed": true
+    },
+    {
+      "name": "exact independent integer accumulators",
+      "passed": true
+    }
+  ]
+}

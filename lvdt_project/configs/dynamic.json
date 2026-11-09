@@ -1,0 +1,5 @@
+{
+  "duration_s": 1.0,
+  "seed": 42,
+  "trajectory": {"mode": "sine", "center_mm": 0.0, "amplitude_mm": 3.0, "frequency_hz": 2.0}
+}

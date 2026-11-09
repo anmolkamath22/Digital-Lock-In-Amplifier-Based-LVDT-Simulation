@@ -1,0 +1,5 @@
+{
+  "duration_s": 0.55,
+  "seed": 42,
+  "trajectory": {"mode": "calibration", "values_mm": [-5,-4,-3,-2,-1,0,1,2,3,4,5], "hold_windows": 5}
+}

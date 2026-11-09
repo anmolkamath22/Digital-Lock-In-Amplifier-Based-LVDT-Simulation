@@ -1,0 +1,5 @@
+{
+  "duration_s": 1.0,
+  "seed": 42,
+  "trajectory": {"mode": "static", "value_mm": 2.0}
+}

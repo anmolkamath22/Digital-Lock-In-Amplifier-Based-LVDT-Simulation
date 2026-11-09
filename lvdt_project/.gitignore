@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+# Keep generated HDL vectors and reports available to the Verilog teammate.
+# Ignore only temporary plots/cache files if you later choose to exclude them.

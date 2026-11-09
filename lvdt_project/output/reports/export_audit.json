@@ -1,0 +1,164 @@
+{
+  "status": "passed",
+  "scenario_count": 13,
+  "sample_count": 251000,
+  "window_count": 1255,
+  "scenarios": [
+    {
+      "scenario": "adc_overrange",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\adc_overrange\\adc_samples.hex": "007aa1a4ce743cc84ce9158b3bcd9d5055f59bda7580f6a4fec2ffd3d11b38d4",
+        "vectors\\adc_overrange\\expected_results.csv": "cb5e5ee902154e380c0b07ddee4e03848652eec8e4cf1cc71fabd1de65007b52",
+        "vectors\\adc_overrange\\metadata.json": "934db5036638b38ea9f9c292683543d9593039308470cc83e2c54a2ea86f46f9",
+        "vectors\\adc_overrange\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\adc_overrange\\ground_truth.csv": "6003dcfec983293c7273d17517dbf57d630c29b21e41f32a0c27fb9f37850238"
+      }
+    },
+    {
+      "scenario": "baseline",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\baseline\\adc_samples.hex": "809b6e07ed5df543ca3d6854037e650259476bfbfe940353459d06f904801690",
+        "vectors\\baseline\\expected_results.csv": "067cf55292590078e3e6e9d51b980dd62a29ad7f5ef99e6aa3df773551456e0b",
+        "vectors\\baseline\\metadata.json": "e4a2bd1499a40d63e382046d67f395fa05473cade982b9ad2e6f05ee46f6d364",
+        "vectors\\baseline\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\baseline\\ground_truth.csv": "675f08a174460519667b977902ab89d6f6247d571e7c8efdaaa6df51849da4b2"
+      }
+    },
+    {
+      "scenario": "calibration",
+      "samples": 11000,
+      "windows": 55,
+      "sha256": {
+        "vectors\\calibration\\adc_samples.hex": "2db66450eae33cd38eade83922965cd14d271a7fd50c8f5761c3474e7ffe9721",
+        "vectors\\calibration\\expected_results.csv": "34ae66c566e9abfcc24639bdb5bb3e036701de62ffd35b61a3bbe8c5e664e28c",
+        "vectors\\calibration\\metadata.json": "e1575cc4672f21ed115a14577ff4b220abd2997dea25a74c13be5f2b19835827",
+        "vectors\\calibration\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\calibration\\ground_truth.csv": "b80f122712697a8374bc682ef27b3cd0944a7ed4056e5dfb20330f3b68246e00"
+      }
+    },
+    {
+      "scenario": "dynamic",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\dynamic\\adc_samples.hex": "0b65e85190fd3dd935c7af73ca7869892666f462f6d961f9ecb892ba0ae7ce2a",
+        "vectors\\dynamic\\expected_results.csv": "9bdf9a7513a93dd72a7ff741b4c2e3ae2b020ad6170b6220a398281c78bc93b4",
+        "vectors\\dynamic\\metadata.json": "b05aee77c31ca9bf9d13b288c5b01e9280282f2e0c94fba48a23fe93e09d7be7",
+        "vectors\\dynamic\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\dynamic\\ground_truth.csv": "08cdd75f2382bcee79e799e7872f1c2f5fe6a5440c3d5ea74f8c87b06b2d9b73"
+      }
+    },
+    {
+      "scenario": "high_noise",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\high_noise\\adc_samples.hex": "10964f76e92fa3154aaf245754e3df57ff3d27689d5df7aee81a5a3fa0f306cd",
+        "vectors\\high_noise\\expected_results.csv": "efa2f62636e36b52cb24245006fa2531fac646e9638a11c5a905e4c29987fe2d",
+        "vectors\\high_noise\\metadata.json": "87d3542e885780b11ad38fc045c7329f12af99ba6961c8766a3866ae4ee4d84a",
+        "vectors\\high_noise\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\high_noise\\ground_truth.csv": "32fe3e6a88b7797dd9da5926f65bb5afcaf2e37ed69e8bbaf51085c348763421"
+      }
+    },
+    {
+      "scenario": "negative",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\negative\\adc_samples.hex": "82c8befd3e41bc755b03bae168b360097c0e304a077d52f23efc57a1e73968bb",
+        "vectors\\negative\\expected_results.csv": "3383cc27ef05ee5779efe5a7f33438c184477da690e2c582451ed22520e26551",
+        "vectors\\negative\\metadata.json": "be0ed4d47b310e6d28a00be32e3e1a9d16c9f37098befd1ee20ad0c84561f97d",
+        "vectors\\negative\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\negative\\ground_truth.csv": "4ca7f646c2fd6d27eb6059cf5593b8677a260b534b41affaaa5d2cb2c0169b55"
+      }
+    },
+    {
+      "scenario": "noisy",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\noisy\\adc_samples.hex": "f49700fafb749f491c3229313973ed66a901528a6e27b9b0b1344ee5a2faa375",
+        "vectors\\noisy\\expected_results.csv": "dc3593f22af1d6a3afd5378a228717a8e67f10f6a5c0959d7375f609e364f571",
+        "vectors\\noisy\\metadata.json": "693a17167b6a4a33502d35e03792061c7ad60e371d41ce8207efd5cb578c802a",
+        "vectors\\noisy\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\noisy\\ground_truth.csv": "9f7d2805bc3bed09c1a04f34ea9e39e7d39cd0e4a088912a8e4f160148e7d435"
+      }
+    },
+    {
+      "scenario": "null",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\null\\adc_samples.hex": "01b1b39cd87c7c403375fab7ca5263e9a2ffa3f3a41c8daeac4da94ce26a2f09",
+        "vectors\\null\\expected_results.csv": "ea384bd7dd08f823209a786f4293e0d4e9688bdf22030a1f0461f0d2c61b3c98",
+        "vectors\\null\\metadata.json": "6ee3a962492bf227ec9def0ea740fe1e6eab7df0dfdcfa761a1cb5d07dbd38a9",
+        "vectors\\null\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\null\\ground_truth.csv": "4f20831a5034441f23df680473d0ddb5555e4baf2e0cef3bf9db5888f1ad74ed"
+      }
+    },
+    {
+      "scenario": "phase_mismatch",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\phase_mismatch\\adc_samples.hex": "c9741f353b99eb618dcea71927f39b7afd4ada2a4d30d67056a43817767bec20",
+        "vectors\\phase_mismatch\\expected_results.csv": "2a4d382d23ce95b8d087c63b097ddddcb33690324e492f545272d3ba106c2e2f",
+        "vectors\\phase_mismatch\\metadata.json": "e7ccce9cb086c13750a418a41eb8cc45b0541b6851919acb883630caf3abdd13",
+        "vectors\\phase_mismatch\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\phase_mismatch\\ground_truth.csv": "3cab297c0925ca2953dbed071881321f97c5026ff7757e08069239d8277ed7a0"
+      }
+    },
+    {
+      "scenario": "positive",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\positive\\adc_samples.hex": "809b6e07ed5df543ca3d6854037e650259476bfbfe940353459d06f904801690",
+        "vectors\\positive\\expected_results.csv": "067cf55292590078e3e6e9d51b980dd62a29ad7f5ef99e6aa3df773551456e0b",
+        "vectors\\positive\\metadata.json": "184f2c8c7fc0d246f0d942626568b1638ab9ead4d1d5cee9f2bee79d12826d99",
+        "vectors\\positive\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\positive\\ground_truth.csv": "675f08a174460519667b977902ab89d6f6247d571e7c8efdaaa6df51849da4b2"
+      }
+    },
+    {
+      "scenario": "same_frequency_interference",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\same_frequency_interference\\adc_samples.hex": "734e75d4b67e168d21b9a6eac175dd5a3343cde879caf85becb3d29884d4e0f9",
+        "vectors\\same_frequency_interference\\expected_results.csv": "f69bab924471076262681da6c8bc3ac95e50ed5948b71e6b6611e9bc5372beb5",
+        "vectors\\same_frequency_interference\\metadata.json": "f21e01ef230e66eb056fb5835e5eff5f92ca9fa903d4de27da359e63ffa7eed0",
+        "vectors\\same_frequency_interference\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\same_frequency_interference\\ground_truth.csv": "622c795b142138b9c99812f8f15dc5bcf0f9f71e5db638e0cfc5c41f74d891b3"
+      }
+    },
+    {
+      "scenario": "sinusoidal",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\sinusoidal\\adc_samples.hex": "0b65e85190fd3dd935c7af73ca7869892666f462f6d961f9ecb892ba0ae7ce2a",
+        "vectors\\sinusoidal\\expected_results.csv": "9bdf9a7513a93dd72a7ff741b4c2e3ae2b020ad6170b6220a398281c78bc93b4",
+        "vectors\\sinusoidal\\metadata.json": "a8cf66ff76f0a3f0d21ae73282f9e9fbdfe8a55177aad4f9e08bfb24e4ffa2c1",
+        "vectors\\sinusoidal\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\sinusoidal\\ground_truth.csv": "08cdd75f2382bcee79e799e7872f1c2f5fe6a5440c3d5ea74f8c87b06b2d9b73"
+      }
+    },
+    {
+      "scenario": "step",
+      "samples": 20000,
+      "windows": 100,
+      "sha256": {
+        "vectors\\step\\adc_samples.hex": "c9fe9d3d08d6500d69cef371290ffa4ed33211f190b93ee6a50606c5aebf67b9",
+        "vectors\\step\\expected_results.csv": "43c0f8901d04d570e201fcf40c2cb979e675447b89669bd493792ef39c090856",
+        "vectors\\step\\metadata.json": "ff6f4ed5e8f5d132534bae74d846671f06124f14912ddc1f488c9ce12405465e",
+        "vectors\\step\\reference_lut.hex": "c1e0b75a2153ac3b4a8dd2de85a3ece288d372f3abe6dabc96f57bc182711087",
+        "ground_truth\\step\\ground_truth.csv": "6c3056f3badd759354a4b505ab2caad9cf5ec96de9f4845f9fb91d486174536f"
+      }
+    }
+  ]
+}

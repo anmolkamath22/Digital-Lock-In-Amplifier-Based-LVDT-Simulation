@@ -1,0 +1,107 @@
+{
+  "data_contract_version": "1.0.0",
+  "configuration": {
+    "fs_hz": 20000.0,
+    "fc_hz": 1000.0,
+    "duration_s": 1.0,
+    "sensitivity_v_per_mm": 0.24,
+    "secondary_null_v": 2.0,
+    "primary_peak_v": 5.0,
+    "min_mm": -5.0,
+    "max_mm": 5.0,
+    "phase_deg": 0,
+    "cubic_v_per_mm3": 0,
+    "adc_full_scale_v": 2.5,
+    "adc_bits": 12,
+    "lut_length": 20,
+    "window_samples": 200,
+    "seed": 42,
+    "noise_std_v": 0,
+    "hum_peak_v": 0,
+    "hum_hz": 50.0,
+    "hum_phase_deg": 0.0,
+    "dc_offset_v": 0,
+    "interference_peak_v": 3,
+    "interference_hz": 1000.0,
+    "interference_phase_deg": 0.0,
+    "drift_peak_v": 0,
+    "drift_hz": 0.1,
+    "trajectory": {
+      "mode": "static",
+      "value_mm": 2
+    }
+  },
+  "units": {
+    "displacement": "mm",
+    "voltage": "V",
+    "time": "s",
+    "frequency": "Hz"
+  },
+  "sampling_frequency_hz": 20000.0,
+  "excitation_frequency_hz": 1000.0,
+  "adc": {
+    "nominal_bits": 12,
+    "full_scale_v": 2.5,
+    "code_min": -2048,
+    "code_max": 2047,
+    "volts_per_code": 0.001220703125,
+    "word_format": "signed 16-bit two's complement, four uppercase HEX characters",
+    "rounding": "numpy.rint, nearest ties to even",
+    "clipped_count": 10000,
+    "clipped_percent": 50.0,
+    "analog_overrange_count": 10000
+  },
+  "reference": {
+    "length": 20,
+    "scale": 16384,
+    "format": "signed 16-bit Q1.14",
+    "initial_index": 0,
+    "phase": "continuous across windows; advance only on accepted samples"
+  },
+  "window_samples": 200,
+  "number_of_samples": 20000,
+  "number_of_windows": 100,
+  "discarded_trailing_samples": 0,
+  "end_sample_convention": "inclusive",
+  "timestamp": "midpoint of first and last accepted sample times",
+  "random_seed": 42,
+  "rng_stream_id": 8,
+  "rng": "default_rng(SeedSequence([seed, stream_id]))",
+  "width_bounds": {
+    "maximum_absolute_product": 33554432,
+    "conservative_absolute_sum": 6710886400,
+    "minimum_signed_accumulator_bits": 34,
+    "recommended_accumulator_bits": 40
+  },
+  "ground_truth_columns": [
+    "sample_index",
+    "time_s",
+    "displacement_mm",
+    "primary_voltage_v",
+    "secondary_1_v",
+    "secondary_2_v",
+    "differential_voltage_v",
+    "measured_analog_voltage_v",
+    "adc_code"
+  ],
+  "expected_results_columns": [
+    "window_index",
+    "start_sample",
+    "end_sample",
+    "center_time_s",
+    "expected_accumulator",
+    "estimated_displacement_mm",
+    "true_window_mean_mm",
+    "absolute_error_mm"
+  ],
+  "known_limitations": [
+    "single in-phase channel has cosine phase error",
+    "coherent interference is inseparable",
+    "changing motion is sine-squared weighted within a window; arithmetic truth mean is diagnostic",
+    "rectangular windows cause frequency leakage",
+    "analog-equivalent sampled model; no analog anti-alias filter",
+    "ADC quantization and saturation; positive full scale is asymmetric",
+    "cubic nonlinearity is not inverted by the linear estimator",
+    "non-integral-cycle windows can have gain ripple and DC leakage"
+  ]
+}

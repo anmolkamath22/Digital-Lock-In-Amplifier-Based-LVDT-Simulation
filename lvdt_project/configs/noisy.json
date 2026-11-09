@@ -1,0 +1,10 @@
+{
+  "duration_s": 1.0,
+  "noise_std_v": 0.2,
+  "hum_peak_v": 0.1,
+  "dc_offset_v": 0.15,
+  "interference_peak_v": 0.1,
+  "interference_hz": 950.0,
+  "seed": 42,
+  "trajectory": {"mode": "static", "value_mm": 2.0}
+}
