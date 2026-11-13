@@ -1,3 +1,22 @@
-numpy>=1.24
-matplotlib>=3.7
+# Python 3.11+ required.
+# Install:  python -m pip install -r requirements.txt
+#           python -m pip install -e . --no-build-isolation --no-deps
+#
+# Not a pip package: Icarus Verilog (iverilog + vvp) must be installed separately
+# for the web demo to simulate the real RTL. See README "Install".
+
+# --- Core simulation (src/lvdt_sim) -------------------------------------------
+numpy>=1.24,<3
+
+# --- Diagnostic plots (scripts/generate_diagnostic_plots.py) -------------------
+matplotlib>=3.7,<4
+
+# --- Tests and validation (tests/, scripts/run_validation.py) ------------------
 pytest>=7.4
+
+# --- Web demo (web/app.py) -----------------------------------------------------
+flask>=3.0,<4
+waitress>=3.0        # production WSGI server (works on Windows and Linux)
+
+# --- Packaging (editable install of lvdt_sim) ---------------------------------
+setuptools>=68

@@ -6,3 +6,9 @@ __pycache__/
 # Keep generated HDL vectors and reports available to the Verilog teammate.
 # Ignore only temporary plots/cache files if you later choose to exclude them.
 docs/
+
+# Web demo run artefacts
+output/web_runs/
+LVDT_LockIn_Amplifier.srcs.zip
+LVDT_LockIn_Amplifier.srcs/
+sim_run/

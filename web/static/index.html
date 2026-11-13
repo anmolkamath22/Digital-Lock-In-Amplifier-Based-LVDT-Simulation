@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LVDT Digital Lock-In</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0f1419;--panel:#171e26;--line:#26303b;--text:#e6edf3;--muted:#8b98a5;--accent:#4cc2ff;--ok:#3fb950;--bad:#f85149;--warn:#d29922}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,Segoe UI,sans-serif}
+header{padding:28px 16px 18px;text-align:center;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#14202c,var(--bg))}
+header h1{margin:0;font-size:clamp(22px,4vw,34px);letter-spacing:.3px}
+header p{margin:6px auto 0;color:var(--muted);max-width:780px}
+.flow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px;font-size:12px}
+.flow span{padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.flow span.on{border-color:var(--accent);color:var(--accent)}
+main{display:grid;grid-template-columns:340px 1fr;gap:16px;padding:16px;max-width:1500px;margin:auto}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:16px}
+h2{font-size:15px;margin:0 0 10px}
+h3{font-size:12px;text-transform:uppercase;color:var(--muted);margin:14px 0 6px;letter-spacing:.6px}
+label{display:grid;grid-template-columns:1fr 70px;gap:6px;align-items:center;font-size:13px;margin:4px 0}
+label small{color:var(--muted)}
+input[type=range]{grid-column:1/3;width:100%}
+input[type=number],select{background:#0b1015;border:1px solid var(--line);color:var(--text);border-radius:5px;padding:3px 5px;width:100%}
+button{width:100%;padding:10px;border:0;border-radius:7px;font-weight:600;cursor:pointer;margin-top:8px;background:var(--accent);color:#04121c}
+button.sec{background:#26303b;color:var(--text)}
+button:disabled{opacity:.45;cursor:default}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.presets button{width:auto;padding:4px 10px;margin:0;font-weight:500;font-size:12px;background:#26303b;color:var(--text)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.stat{background:#0b1015;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.stat b{display:block;font-size:18px}
+.stat small{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:1100px){.grid2{grid-template-columns:1fr}}
+.chart{position:relative;height:260px}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600}
+.pass{background:#0f2d18;color:var(--ok)}.fail{background:#3a1416;color:var(--bad)}.info{background:#13283a;color:var(--accent)}
+pre{background:#0b1015;border:1px solid var(--line);border-radius:6px;padding:8px;max-height:160px;overflow:auto;font-size:12px;white-space:pre-wrap}
+table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+th,td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:right}
+th{color:var(--muted);position:sticky;top:0;background:var(--panel)}
+.tbl{max-height:260px;overflow:auto}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.big .stat b{font-size:26px;color:var(--accent)}
+.big .stat.ph b{color:#a371f7}
+.err{color:var(--bad);font-size:13px;margin-top:6px}
+.muted{color:var(--muted)}
+details summary{cursor:pointer;color:var(--muted)}
+code{background:#0b1015;padding:1px 4px;border-radius:4px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Digital Lock-In Amplifier for LVDT Displacement Sensing</h1>
+  <p>Python models the LVDT, noise and 12-bit ADC and exports HDL test vectors. The Verilog <code>lockin_top</code> correlates each sample with a 20-entry Q1.14 sine LUT and adds up 200-sample windows. Its accumulators are then checked one by one against the Python golden model.</p>
+  <div class="flow"><span id="f1">1 · Tune parameters</span><span id="f2">2 · Python signal + vectors</span><span id="f3">3 · Verilog lock-in</span><span id="f4">4 · Bit-exact compare</span></div>
+</header>
+
+<main>
+<aside>
+  <div class="card">
+    <h2>Presets</h2>
+    <div class="presets" id="presets"></div>
+  </div>
+  <form class="card" id="form">
+    <h2>Signal generation (Python)</h2>
+    <h3>Motion</h3>
+    <label>Trajectory<select name="mode" id="mode">
+      <option value="static">static</option><option value="step">step</option><option value="sine">sine</option>
+      <option value="ramp">ramp</option><option value="calibration">calibration</option></select></label>
+    <div id="traj"></div>
+    <h3>Sensor</h3>
+    <div data-p="duration_s|Duration (s)|0.1|5|0.1|1"></div>
+    <div data-p="sensitivity_v_per_mm|Sensitivity K (V/mm)|0.05|0.4|0.01|0.24"></div>
+    <div data-p="phase_deg|Sensor phase error (°)|0|90|1|0"></div>
+    <div data-p="cubic_v_per_mm3|Cubic nonlinearity (V/mm³)|-0.002|0.002|0.0001|0"></div>
+    <h3>Noise &amp; interference</h3>
+    <div data-p="noise_std_v|Gaussian noise σ (V)|0|0.6|0.01|0"></div>
+    <div data-p="hum_peak_v|Mains hum (Vpk)|0|0.5|0.01|0"></div>
+    <div data-p="hum_hz|Hum frequency (Hz)|0|500|10|50"></div>
+    <div data-p="dc_offset_v|DC offset (V)|-0.5|0.5|0.01|0"></div>
+    <div data-p="interference_peak_v|Tone interferer (Vpk)|0|3|0.01|0"></div>
+    <div data-p="interference_hz|Tone frequency (Hz)|0|9990|10|400"></div>
+    <div data-p="interference_phase_deg|Tone phase (°)|0|360|1|0"></div>
+    <div data-p="drift_peak_v|Baseline drift (Vpk)|0|0.5|0.01|0"></div>
+    <div data-p="drift_hz|Drift frequency (Hz)|0|5|0.1|0.1"></div>
+    <h3>Randomness</h3>
+    <div data-p="seed|Seed|0|9999|1|42"></div>
+    <div data-p="stream_id|RNG stream ID|0|99|1|0"></div>
+    <p class="muted" style="font-size:12px">The RTL hard-codes fs = 20 kHz, fc = 1 kHz, a 20-entry LUT and a 200-sample window, so those values are locked here.</p>
+    <button type="submit" id="genBtn">① Generate signal &amp; vectors</button>
+    <button type="button" id="simBtn" disabled>② Run Verilog lock-in</button>
+    <button type="button" class="sec" id="dlBtn" disabled>Download vectors (.zip)</button>
+    <div class="err" id="err"></div>
+  </form>
+</aside>
+
+<section>
+  <div class="card">
+    <h2>Run summary <span id="engineBadge" class="badge info"></span></h2>
+    <div class="stats" id="stats"><div class="stat"><small>Status</small><b>Waiting</b></div></div>
+  </div>
+
+  <div class="card" id="resultsCard">
+    <h2>Lock-in results (from Verilog)</h2>
+    <div id="results" class="muted">Press ① Generate and then ② Run Verilog lock-in to see magnitude and phase.</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><h2>Magnitude per window</h2><div class="chart"><canvas id="cMag"></canvas></div></div>
+    <div class="card"><h2>Phase angle per window</h2><div class="chart"><canvas id="cPhase"></canvas></div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><h2>LVDT signals: first 20 ms</h2><div class="chart"><canvas id="cWave"></canvas></div></div>
+    <div class="card"><h2>ADC codes (12-bit, signed)</h2><div class="chart"><canvas id="cAdc"></canvas></div></div>
+    <div class="card"><h2>Spectrum of measured signal</h2><div class="chart"><canvas id="cFft"></canvas></div></div>
+    <div class="card"><h2>Displacement: truth vs. Python vs. Verilog</h2><div class="chart"><canvas id="cDisp"></canvas></div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card"><h2>Per-window error (Verilog − truth mean)</h2><div class="chart"><canvas id="cErr"></canvas></div></div>
+    <div class="card"><h2>Per-window results (Verilog I/Q vs. Python golden)</h2>
+      <div class="tbl"><table><thead><tr><th>#</th><th>t (ms)</th><th>I sum (Verilog)</th><th>Q sum (Verilog)</th><th>|V| (V)</th><th>|x| (mm)</th><th>Phase (°)</th><th>x signed (mm)</th><th>I✓</th><th>Q✓</th></tr></thead><tbody id="tbody"></tbody></table></div>
+    </div>
+  </div>
+
+  <div class="card"><h2>Simulator log</h2><pre id="log">–</pre></div>
+
+  <div class="card">
+    <h2>How it works</h2>
+    <details open><summary>Signal chain</summary>
+    <p><code>V1,2 = (A0 ± D/2)·sin(2πfc·t + φ)</code>, with <code>D = K·x + αx³</code>. The differential output <code>D·sin(…)</code> picks up white noise, hum, a DC offset, a tone interferer and drift. It is then quantised with <code>q = clip(rint(v·2048/2.5))</code>.</p></details>
+    <details><summary>Verilog datapath</summary>
+    <p>On each accepted sample the RTL computes <code>product = sample × LUT[k]</code> (signed 16×16 → 32-bit), adds it to a 40-bit accumulator and steps <code>k</code> modulo 20. On the 200th sample it latches the sum with <code>output_valid</code> and clears the accumulator. The displacement is <code>x = 2S/(200·16384) · (2.5/2048) / K</code>.</p></details>
+    <details open><summary>Magnitude and phase</summary>
+    <p><code>lockin_top.v</code> has only the in-phase channel. To measure phase, the backend runs the <b>same RTL twice</b>: once with the sine LUT, giving the I sum, and once with a cosine LUT, giving the Q sum. Each sum is converted to volts with <code>V = 2S/(200·16384)·(2.5/2048)</code>. Magnitude is <code>|V| = √(I²+Q²)</code>, the phase angle is <code>φ = atan2(Q, I)</code>, and the displacement magnitude is <code>|V|/K</code>. A negative displacement appears as a phase near ±180°. Both channels are checked bit for bit against Python integer sums.</p></details>
+    <details><summary>What to try</summary>
+    <ul>
+      <li>Raise the noise σ. The error grows roughly as σ / (K·√100).</li>
+      <li>Set the tone to 1000 Hz. A coherent interferer can't be told apart from real displacement.</li>
+      <li>Set the tone to 950 Hz and watch the beating leak through the rectangular window.</li>
+      <li>Set the phase error to 60°. The estimate scales by cos φ, because the design has only an I channel.</li>
+      <li>Set the tone above about 1.5 V. The ADC clips and correlation breaks down.</li>
+    </ul></details>
+  </div>
+</section>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>

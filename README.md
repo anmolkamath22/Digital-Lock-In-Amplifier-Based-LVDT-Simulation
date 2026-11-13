@@ -1,113 +1,190 @@
-# Digital lock-in LVDT — Phase 1
+# Digital Lock-In Amplifier for LVDT Displacement Sensing
 
-Executable Python 3.11+ sensor simulation, ADC acquisition, and exact integer
-verification vectors for a separate Verilog lock-in project. Parameters describe
-a chosen teaching model, not a commercial sensor. No RTL or dashboard is included.
+This project takes an LVDT (Linear Variable Differential Transformer) displacement sensor from
+physics to hardware. **Python** models the sensor, noise and a 12-bit ADC, and exports bit-exact
+test vectors. **Verilog** implements a digital lock-in amplifier (sine-reference correlator plus a
+200-sample integrator). A **web dashboard** lets you tune the signal, run the real RTL in
+Icarus Verilog, and read the displacement, magnitude and phase angle. Every Verilog accumulator is
+checked against the Python golden model, bit for bit.
 
-For a detailed walkthrough, read the project documentation in the local `docs/`
-directory. It maps the module connectors and shows how to generate signals and
-provide exact expected sums to an HDL testbench.
+> Teaching model: the parameters describe a chosen model, not a commercial sensor.
 
-## Install and run
+## Features
 
-Run commands from `lvdt_project/`. Use a virtual environment so installation stays
-local to this project. Standard installation (Windows PowerShell):
+- Physical LVDT model with static, step, sine, ramp and calibration motion, a sensor phase error
+  and cubic nonlinearity
+- Tunable impairments: Gaussian noise, mains hum, DC offset, a tone interferer and baseline drift
+- 12-bit ADC with saturation, and a 20-entry Q1.14 sine LUT exported as `$readmemh` HEX
+- Verilog lock-in (`lockin_top.v`) simulated with Icarus Verilog and compared with exact Python sums
+- I/Q demodulation: the same RTL runs once with a sine LUT and once with a cosine LUT, giving
+  **magnitude √(I²+Q²)** and **phase angle atan2(Q, I)** for each window
+- Dashboard charts: winding signals, ADC codes, spectrum, displacement, magnitude, phase and error,
+  plus a downloadable vector bundle
+- 58 unit tests, numerical validation (Monte Carlo, calibration, phase) and an export audit
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m pip install -e . --no-build-isolation --no-deps
-.\.venv\Scripts\Activate.ps1
-```
-
-On Linux: `python3 -m venv .venv`, `source .venv/bin/activate`, followed by the same
-`python -m pip` commands. If dependencies are already installed locally,
-`python -m venv .venv --system-site-packages` permits offline reuse; the editable
-install needs setuptools >=68. After installation, no network is used.
+## Architecture
 
 ```text
-python scripts/generate_scenarios.py --config configs/baseline.json
-python scripts/generate_scenarios.py --config configs/noisy.json
-python scripts/generate_scenarios.py --config configs/dynamic.json
-python scripts/generate_scenarios.py --config configs/baseline.json --all
-python scripts/generate_hdl_vectors.py --config configs/calibration.json
-python scripts/run_validation.py
-python scripts/generate_diagnostic_plots.py
-python scripts/audit_exports.py
+ ┌───────────────────────── Browser (web/static) ─────────────────────────┐
+ │ index.html + app.js + Chart.js                                         │
+ │ sliders / presets → ① Generate → ② Run Verilog → results and charts    │
+ └──────────────┬────────────────────────────────────────▲────────────────┘
+                │ JSON (fetch)                           │ JSON
+ ┌──────────────▼────────── Flask backend (web/app.py) ──┴────────────────┐
+ │ POST /api/generate     POST /api/simulate/<run>     GET /api/download  │
+ └──────┬──────────────────────────────┬──────────────────────────────────┘
+        │                              │
+ ┌──────▼──────── Python model ──┐  ┌──▼──────── web/hdl_runner.py ─────────┐
+ │ src/lvdt_sim                  │  │ stage HEX files → data/               │
+ │ trajectory → sensor → noise   │  │ iverilog tb_lockin.v lockin_top.v     │
+ │ → 12-bit ADC → golden lock-in │─▶│ vvp  (I: sine LUT, Q: cosine LUT)     │
+ │ exports adc_samples.hex,      │  │ fallback: xsim → Python RTL model     │
+ │ reference_lut.hex,            │  └──┬────────────────────────────────────┘
+ │ expected_results.csv          │     │ bit-exact compare; → V, mm, |V|, φ
+ └───────────────────────────────┘     ▼
+                          ┌──────── hdl/ (Verilog) ─────────┐
+                          │ rtl/lockin_top.v  16×16 MAC,    │
+                          │  40-bit acc, 200-sample window  │
+                          │ sim/tb_lockin.v   testbench     │
+                          └─────────────────────────────────┘
 ```
 
-Both vector scripts produce the complete data contract. `--output-dir` changes
-the default `output/`, `--name` changes a single scenario name, and `--stream-id`
-selects its independent noise stream. `--all` creates ten standardized cases
-(and intentionally supplies clean baseline nonidealities independently of the
-input config's noise settings). Validation/plots accept `--trials` (default 1000,
-minimum 200). Validation runs pytest first, then numerical acceptance checks;
-critical failures exit nonzero. `python -m pytest -q` runs just unit/integration tests.
-Relative output/config paths are interpreted from the working directory.
+Signal chain:
+
+```text
+x(t) → LVDT  D = Kx + αx³ → + noise/hum/offset/tone/drift → ADC q = clip(rint(v·2048/2.5))
+     → Verilog  S = Σ q[n]·LUT[n mod 20] over 200 samples → x = 2S/(200·16384)·(2.5/2048)/K
+```
+
+| Layer | Technology |
+|---|---|
+| Simulation | Python 3.11+, NumPy |
+| Plots / tests | Matplotlib, pytest |
+| Hardware | Verilog-2005, Icarus Verilog 12/13 (Vivado xsim also supported) |
+| Web backend | Flask, served by Waitress |
+| Web frontend | HTML, CSS, vanilla JavaScript, Chart.js 4 (CDN) |
 
 ## Repository structure
 
 ```text
-lvdt_project/
-  src/lvdt_sim/
-    __init__.py
-    config.py
-    trajectories.py
-    sensor.py
-    noise.py
-    adc.py
-    reference.py
-    lockin_reference.py
-    metrics.py
-    export.py
-    pipeline.py
-    validation.py
-    diagnostics.py
-  scripts/
-    _common.py
-    generate_scenarios.py
-    generate_hdl_vectors.py
-    run_validation.py
-    generate_diagnostic_plots.py
-    audit_exports.py
-  tests/
-    test_trajectories.py
-    test_sensor.py
-    test_noise.py
-    test_adc.py
-    test_reference.py
-    test_lockin.py
-    test_export.py
-    test_pipeline.py
-  configs/
-    baseline.json
-    noisy.json
-    calibration.json
-    dynamic.json
-  output/                         # generated, ignored by Git
-    vectors/<scenario>/
-      adc_samples.hex
-      reference_lut.hex
-      expected_results.csv
-      metadata.json
-    ground_truth/<scenario>/ground_truth.csv
-    diagnostics/01_windings.png ... 08_phase_error.png
-    reports/
-      pytest.xml
-      test_results.json
-      validation.json
-      validation.md
-      calibration.csv
-      noise_summary.csv
-      monte_carlo_trials.csv
-      export_audit.json
-  requirements.txt
-  pyproject.toml
-  README.md
-  .gitignore
+.
+├── src/lvdt_sim/          # Python package: config, trajectories, sensor, noise, adc,
+│                          # reference LUT, lock-in reference, metrics, export, pipeline
+├── scripts/               # CLI: generate scenarios/vectors, validation, plots, audit
+├── tests/                 # pytest suite
+├── configs/               # JSON experiment configs (baseline, noisy, calibration, dynamic)
+├── hdl/
+│   ├── rtl/lockin_top.v   # lock-in datapath (unchanged from the Vivado project)
+│   └── sim/tb_lockin.v    # testbench with `ADC_HEX` / `NUM_SAMPLES` macros
+├── web/
+│   ├── app.py             # Flask server and REST API
+│   ├── hdl_runner.py      # runs iverilog/xsim (or the Python RTL model), parses results
+│   └── static/            # index.html, app.js
+├── output/
+│   ├── vectors/<scenario>/      # adc_samples.hex, reference_lut.hex, expected_results.csv, metadata.json
+│   ├── ground_truth/<scenario>/ # ground_truth.csv
+│   ├── diagnostics/             # 8 PNG plots
+│   ├── reports/                 # validation and audit reports
+│   └── web_runs/                # per-run dashboard output (git-ignored)
+├── requirements.txt
+└── pyproject.toml
 ```
 
-## Physical and numerical assumptions
+## Install
+
+### 1. Python environment
+
+```powershell
+git clone https://github.com/anmolkamath22/Digital-Lock-In-Amplifier-Based-LVDT-Simulation.git
+cd Digital-Lock-In-Amplifier-Based-LVDT-Simulation
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1                 # Linux/macOS: source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pip install -e . --no-build-isolation --no-deps
+```
+
+### 2. Icarus Verilog (needed to run the real RTL)
+
+Icarus is a standalone program, not a pip package.
+
+| OS | Command |
+|---|---|
+| Windows | Download and run `https://bleyer.org/icarus/iverilog-v12-20220611-x64_setup.exe`, and tick **"Add executable folder(s) to the user PATH"**. Or, from an admin shell: `choco install iverilog -y` |
+| Ubuntu/Debian | `sudo apt install iverilog` |
+| macOS | `brew install icarus-verilog` |
+
+Reopen the terminal and check with `iverilog -V`. If Icarus is installed but not on PATH, set
+`IVERILOG_BIN` to its `bin` folder. The runner also checks `C:\iverilog\bin` and
+`~/iverilog/ucrt64/bin`. Without Icarus, the dashboard still runs using a cycle-accurate Python
+model of `lockin_top.v`, and it labels that engine on the page.
+
+## Run
+
+### Web dashboard
+
+```powershell
+python web/app.py                 # http://127.0.0.1:5000 (Waitress)
+```
+
+Environment variables: `HOST` (default `127.0.0.1`; use `0.0.0.0` to expose on a network),
+`PORT` (default `5000`), `FLASK_DEV=1` (Flask debug server with auto-reload).
+
+Workflow on the page:
+
+1. Pick a preset or tune the sliders: motion, sensitivity, phase error, noise σ, hum, offset,
+   tone, drift and seed.
+2. **① Generate signal & vectors** runs the Python model and writes HEX/CSV vectors to
+   `output/web_runs/`.
+3. **② Run Verilog lock-in** runs Icarus on `tb_lockin.v` + `lockin_top.v` twice (I and Q).
+4. Read the results: magnitude (V and mm), phase angle (°), signed displacement, the per-window
+   table with ✓ for bit-exact I/Q, the charts, and the simulator log. **Download** gives the
+   vector bundle.
+
+### Command-line simulation and vectors
+
+```powershell
+python scripts/generate_scenarios.py --config configs/baseline.json --all   # 10 standard scenarios
+python scripts/generate_hdl_vectors.py --config configs/noisy.json --name my_case --stream-id 3
+python scripts/run_validation.py          # pytest and numerical acceptance checks
+python scripts/generate_diagnostic_plots.py
+python scripts/audit_exports.py           # independent HEX/CSV/accumulator audit
+python -m pytest -q
+```
+
+### Verilog only (manual)
+
+`lockin_top.v` reads `data/reference_lut.hex` relative to the working directory:
+
+```powershell
+mkdir sim_run\data -Force
+copy output\vectors\baseline\*.hex sim_run\data\
+cd sim_run
+iverilog -g2005 -DNUM_SAMPLES=20000 -o tb.vvp ..\hdl\sim\tb_lockin.v ..\hdl\rtl\lockin_top.v
+vvp tb.vvp                                # TEST PASSED; writes rtl_results.csv
+```
+
+Compare `rtl_results.csv` (`accumulator`) with `output/vectors/baseline/expected_results.csv`
+(`expected_accumulator`). They must be identical.
+
+### Deploying the dashboard on a server
+
+Any Linux VM works (for example AWS, Azure or GCP):
+
+```bash
+sudo apt install -y python3-venv iverilog
+git clone https://github.com/anmolkamath22/Digital-Lock-In-Amplifier-Based-LVDT-Simulation.git
+cd Digital-Lock-In-Amplifier-Based-LVDT-Simulation
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt && pip install -e . --no-build-isolation --no-deps
+HOST=0.0.0.0 PORT=8000 python web/app.py
+```
+
+Static-only hosts (GitHub Pages, Vercel, Streamlit Cloud) cannot run Icarus Verilog, so they
+are not suitable for the live RTL simulation.
+
+## Configuration reference
+
+### Physical and numerical assumptions
 
 Every sample time is `t[n] = n/fs`; no cumulative time stepping is used. Duration
 must contain an integer number of samples. Defaults: fs=20 kHz, fc=1 kHz,
@@ -185,7 +262,7 @@ and signed 16-bit Q1.14 scaling (divide by 16384). Load these exact rounded word
 in RTL. Coherence requires fs/fc = LUT length; different integral ratios may be
 configured but must be coordinated with the HDL implementation.
 
-## Reference measurement and timing
+### Reference measurement and timing
 
 ```text
 I = (2/N) sum(measured_analog_v[n] * sin(2 pi n/20))
@@ -219,7 +296,7 @@ the arithmetic mean or the exact position at center. This finite-window
 smoothing explains dynamic errors. The expected-results file includes the
 arithmetic truth mean as a diagnostic comparison, not a claim of equality.
 
-## Data contract (version 1.0.0)
+### Data contract (version 1.0.0)
 
 `ground_truth.csv`, exact column order:
 
@@ -241,7 +318,7 @@ sample/window/trailing counts, clipping, column order, widths, and limitations.
 Changing scenario configuration replaces that scenario's files; use a different
 name or output directory to retain multiple runs.
 
-## HDL integration
+### HDL integration rules
 
 1. Reset independently for each scenario. Load its `adc_samples.hex` and
    `reference_lut.hex` with `$readmemh` into signed 16-bit memories/registers.
@@ -270,7 +347,7 @@ bounds for custom settings are included in metadata; retain at least 40 bits.
 Signed declarations/casts are essential because both ADC codes and LUT words can
 be negative. Sample-valid gaps do not appear as zero-valued samples in HEX.
 
-## Scenarios and verification
+### Scenarios and verification
 
 `--all` creates, in order: null (0 mm), positive (+2), negative (−2), calibration
 (−5…+5, 1 mm increments, five windows per level), high_noise (sigma 0.4 V and
@@ -302,7 +379,7 @@ rounding contributes an additional small baseline error. Phase tests verify
 differential output, noise, quantization, dynamic displacement, calibration,
 Monte Carlo error, and phase sensitivity.
 
-## Limitations
+### Limitations
 
 A coherent interferer is indistinguishable from an additional displacement
 projection: 0.24 Vpeak at 1 kHz and zero relative phase adds 1 mm; at 30 degrees
@@ -318,7 +395,7 @@ still occur in optional nonlinear/dynamic waveforms. No industrial accuracy or
 hardware equivalence is claimed. I/Q detection, compensation, filtering,
 dashboard, and hardware deployment remain later-stage extensions.
 
-## Quick guide for using the project
+### Config file quick guide
 
 The main settings are controlled through JSON files in `configs/`. Copy an
 existing file, then change only the values needed for the experiment. For
@@ -341,10 +418,9 @@ Useful settings include `noise_std_v` for Gaussian noise, `hum_peak_v` and
 `interference_peak_v`, `interference_hz`, and `interference_phase_deg` for a
 narrowband tone, `phase_deg` for sensor phase error, and `drift_peak_v` and
 `drift_hz` for slow drift. The trajectory object selects `static`, `step`,
-`sine`, `ramp`, `calibration`, or `custom` motion. The complete parameter list,
-units, validation rules, and examples are in `docs/START_HERE.md`.
+`sine`, `ramp`, `calibration`, or `custom` motion.
 
-Use the scripts as follows from the `lvdt_project` directory:
+Use the scripts as follows from the repository root:
 
 ```powershell
 # Generate one scenario and its Python/HDL handoff files
@@ -398,36 +474,3 @@ completed accumulator against the `expected_accumulator` column in
 used to create those files. Re-running with the same configuration and stream
 ID reproduces the same bytes; changing the configuration or name creates a new
 experiment or replaces files under the same scenario name.
-
-## GitHub sharing
-
-The repository can be shared at:
-
-```text
-https://github.com/anmolkamath22/Digital-Lock-In-Amplifier-Based-LVDT-Simulation
-```
-
-The URL must not end with two periods. From the repository root, run the Git
-commands shown below after creating that GitHub repository and signing in:
-
-```powershell
-git status
-git add lvdt_project
-git commit -m "Add LVDT lock-in simulation and HDL vectors"
-git branch -M main
-git remote add origin https://github.com/anmolkamath22/Digital-Lock-In-Amplifier-Based-LVDT-Simulation.git
-git push -u origin main
-```
-
-If `origin` already exists, use this instead of `git remote add origin`:
-
-```powershell
-git remote set-url origin https://github.com/anmolkamath22/Digital-Lock-In-Amplifier-Based-LVDT-Simulation.git
-```
-
-If the Git repository itself is intended to be `lvdt_project`, run those commands
-after changing into that directory and use `git add .`. If the parent directory
-is the Git repository, use `git add lvdt_project` as shown above. Check with
-`git rev-parse --show-toplevel` before committing. Generated `output/` and
-`.venv/` directories are ignored by `.gitignore`; source, configs, scripts,
-tests, documentation, and packaging files are committed.
